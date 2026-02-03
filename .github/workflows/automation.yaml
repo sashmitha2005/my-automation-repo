@@ -1,7 +1,17 @@
 name: Server Automation Pipeline
 
 on:
-  workflow_dispatch:   # manual trigger
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Enter environment (dev / qa / prod)"
+        required: true
+        default: "dev"
+
+      test_type:
+        description: "Enter test type (smoke / regression)"
+        required: true
+        default: "smoke"
 
 jobs:
   automation-job:
@@ -14,12 +24,14 @@ jobs:
       - name: Step 1 - Check environment
         run: |
           chmod +x scripts/step1_check_env.sh
-          ./scripts/step1_check_env.sh
+          ./scripts/step1_check_env.sh "${{ github.event.inputs.environment }}"
 
       - name: Step 2 - Run test scripts
         run: |
           chmod +x scripts/step2_run_tests.sh
-          ./scripts/step2_run_tests.sh
+          ./scripts/step2_run_tests.sh \
+            "${{ github.event.inputs.environment }}" \
+            "${{ github.event.inputs.test_type }}"
 
       - name: Step 3 - Collect logs
         run: |
