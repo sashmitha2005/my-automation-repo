@@ -1,0 +1,33 @@
+name: Server Automation Pipeline
+
+on:
+  workflow_dispatch:   # manual trigger
+
+jobs:
+  automation-job:
+    runs-on: self-hosted
+
+    steps:
+      - name: Step 0 - Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Step 1 - Check environment
+        run: |
+          chmod +x scripts/step1_check_env.sh
+          ./scripts/step1_check_env.sh
+
+      - name: Step 2 - Run test scripts
+        run: |
+          chmod +x scripts/step2_run_tests.sh
+          ./scripts/step2_run_tests.sh
+
+      - name: Step 3 - Collect logs
+        run: |
+          chmod +x scripts/step3_collect_logs.sh
+          ./scripts/step3_collect_logs.sh
+
+      - name: Step 4 - Upload logs to GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: automation-logs
+          path: automation.log
